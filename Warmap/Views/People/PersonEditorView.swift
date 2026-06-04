@@ -52,4 +52,3 @@ struct PersonEditorView: View {
         dismiss()
     }
 }
-

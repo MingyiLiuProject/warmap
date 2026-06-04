@@ -35,4 +35,3 @@ struct EncounterRow: View {
         .padding(.vertical, 4)
     }
 }
-

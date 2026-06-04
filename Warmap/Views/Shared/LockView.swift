@@ -41,4 +41,3 @@ struct LockView: View {
         .task { await lockManager.unlock() }
     }
 }
-

@@ -18,4 +18,3 @@ struct MainTabView: View {
         .tint(.indigo)
     }
 }
-

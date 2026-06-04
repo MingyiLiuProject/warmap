@@ -57,4 +57,3 @@ struct PersonDetailView: View {
         }
     }
 }
-

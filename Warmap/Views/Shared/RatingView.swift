@@ -18,4 +18,3 @@ struct RatingView: View {
         .accessibilityLabel("评分 \(rating) 分")
     }
 }
-

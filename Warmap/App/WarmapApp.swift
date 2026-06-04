@@ -18,4 +18,3 @@ struct WarmapApp: App {
         .modelContainer(for: [Person.self, Encounter.self])
     }
 }
-

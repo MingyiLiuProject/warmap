@@ -24,4 +24,3 @@ struct WarmapBackupDocument: FileDocument {
         FileWrapper(regularFileWithContents: data)
     }
 }
-

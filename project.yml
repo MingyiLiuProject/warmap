@@ -23,4 +23,3 @@ targets:
       path: Warmap/Resources/Warmap.entitlements
       properties:
         com.apple.developer.default-data-protection: NSFileProtectionComplete
-

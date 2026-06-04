@@ -37,4 +37,3 @@ struct EncryptedArchiveEnvelope: Codable {
     var ciphertext: Data
     var tag: Data
 }
-

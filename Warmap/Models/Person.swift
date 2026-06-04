@@ -31,4 +31,3 @@ final class Person {
         return Double(encounters.map(\.rating).reduce(0, +)) / Double(encounters.count)
     }
 }
-

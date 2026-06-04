@@ -45,4 +45,3 @@ final class Encounter {
             .filter { !$0.isEmpty }
     }
 }
-

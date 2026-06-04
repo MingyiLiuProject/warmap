@@ -28,4 +28,3 @@ struct PersonRow: View {
         .padding(.vertical, 4)
     }
 }
-

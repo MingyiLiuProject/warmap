@@ -76,4 +76,3 @@ struct EncounterMapView: View {
         }
     }
 }
-
