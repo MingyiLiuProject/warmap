@@ -8,18 +8,22 @@ explicit-content product.
 
 ## Brand principles
 
-1. **Private before provocative**  
+1. **Private before provocative**
+
    Security state is always visible, while intimate details stay visually quiet.
 
-2. **Warm, not sugary**  
+2. **Warm, not sugary**
+
    Coral and plum create emotional warmth without defaulting to stereotypical
    pink romance styling.
 
-3. **Data with dignity**  
+3. **Data with dignity**
+
    Counts, scores, and locations are presented as personal reflection, not
    gamification or conquest.
 
-4. **Anonymous by design**  
+4. **Anonymous by design**
+
    People use generated monogram identities. The interface never asks for
    profile photos or real names.
 
