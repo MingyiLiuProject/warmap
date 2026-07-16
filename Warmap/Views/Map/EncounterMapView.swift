@@ -30,43 +30,39 @@ struct EncounterMapView: View {
 
     var body: some View {
         NavigationStack {
-            Group {
+            ZStack {
                 if mapEncounters.isEmpty {
-                    ContentUnavailableView(
-                        "没有地图记录",
-                        systemImage: "map",
-                        description: Text("为记录添加可选坐标后，会以模糊位置显示在地图上。")
-                    )
-                } else {
-                    Map(position: $position) {
-                        ForEach(mapEncounters) { item in
-                            Annotation(
-                                item.encounter.person?.nickname ?? "记录",
-                                coordinate: item.coordinate
+                    WarmapBackground()
+
+                    ScrollView {
+                        VStack(spacing: 28) {
+                            WarmapPageHeader(
+                                eyebrow: "Blurred geography",
+                                title: "记忆地图",
+                                subtitle: "地点帮助回忆，但不需要暴露精确坐标。"
                             ) {
-                                Button {
-                                    selectedEncounter = item.encounter
-                                } label: {
-                                    Image(systemName: "circle.fill")
-                                        .font(.title2)
-                                        .foregroundStyle(.indigo)
-                                        .background(.white, in: Circle())
-                                }
+                                WarmapPrivacyPill(text: "位置已模糊")
                             }
+
+                            WarmapCard {
+                                WarmapEmptyState(
+                                    systemName: "map.fill",
+                                    title: "地图还没有节点",
+                                    message: "为记录加入可选坐标后，这里会显示约公里级的匿名位置。"
+                                )
+                            }
+
+                            privacyExplanation
                         }
+                        .padding(.horizontal, 20)
+                        .padding(.top, 18)
+                        .padding(.bottom, 120)
                     }
-                    .mapStyle(.standard(elevation: .flat))
-                    .safeAreaInset(edge: .bottom) {
-                        Text("地图位置已模糊化，约保留公里级精度")
-                            .font(.caption)
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 8)
-                            .background(.thinMaterial, in: Capsule())
-                            .padding()
-                    }
+                } else {
+                    mapContent
                 }
             }
-            .navigationTitle("地图")
+            .toolbar(.hidden, for: .navigationBar)
             .sheet(item: $selectedEncounter) { encounter in
                 NavigationStack {
                     EncounterEditorView(encounter: encounter)
@@ -74,5 +70,152 @@ struct EncounterMapView: View {
                 .presentationDetents([.large])
             }
         }
+    }
+
+    private var mapContent: some View {
+        ZStack {
+            Map(position: $position) {
+                ForEach(mapEncounters) { item in
+                    Annotation(
+                        item.encounter.person?.nickname ?? "记录",
+                        coordinate: item.coordinate
+                    ) {
+                        Button {
+                            selectedEncounter = item.encounter
+                        } label: {
+                            WarmapMapNode(rating: item.encounter.rating)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+            }
+            .mapStyle(.standard(elevation: .flat))
+            .mapControls {
+                MapCompass()
+                MapScaleView()
+            }
+            .ignoresSafeArea(edges: .top)
+
+            LinearGradient(
+                colors: [
+                    WarmapTheme.canvas.opacity(0.92),
+                    Color.clear,
+                    WarmapTheme.canvas.opacity(0.34)
+                ],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .ignoresSafeArea()
+            .allowsHitTesting(false)
+
+            VStack(spacing: 0) {
+                HStack(alignment: .top) {
+                    VStack(alignment: .leading, spacing: 5) {
+                        Text("PRIVATE GEOGRAPHY")
+                            .font(.system(size: 10, weight: .bold, design: .rounded))
+                            .tracking(1.6)
+                            .foregroundStyle(WarmapTheme.coralSoft)
+                        Text("记忆地图")
+                            .font(.system(size: 29, weight: .bold, design: .rounded))
+                            .foregroundStyle(WarmapTheme.textPrimary)
+                    }
+
+                    Spacer()
+                    WarmapPrivacyPill(text: "约公里级")
+                }
+                .padding(.horizontal, 20)
+                .padding(.top, 16)
+
+                Spacer()
+
+                WarmapCard(padding: 15) {
+                    HStack(spacing: 13) {
+                        Image(systemName: "location.slash.fill")
+                            .font(.system(size: 17, weight: .semibold))
+                            .foregroundStyle(WarmapTheme.mint)
+                            .frame(width: 40, height: 40)
+                            .background(WarmapTheme.mint.opacity(0.1), in: Circle())
+
+                        VStack(alignment: .leading, spacing: 3) {
+                            Text("\(mapEncounters.count) 个模糊位置")
+                                .font(.subheadline.bold())
+                                .foregroundStyle(WarmapTheme.textPrimary)
+                            Text("点击发光节点查看记录，精确坐标不会显示在地图上。")
+                                .font(.caption)
+                                .foregroundStyle(WarmapTheme.textSecondary)
+                                .lineLimit(2)
+                        }
+                    }
+                }
+                .padding(.horizontal, 20)
+                .padding(.bottom, 16)
+            }
+        }
+    }
+
+    private var privacyExplanation: some View {
+        WarmapCard {
+            VStack(alignment: .leading, spacing: 16) {
+                WarmapSectionTitle(title: "地图如何保护你")
+
+                mapPrivacyRow(
+                    icon: "scope",
+                    title: "自动降低精度",
+                    message: "经纬度在展示前会被取整，不显示精确门牌位置。"
+                )
+                WarmapDivider()
+                mapPrivacyRow(
+                    icon: "person.crop.circle.badge.xmark",
+                    title: "不显示公开身份",
+                    message: "地图节点只关联你的本地代号。"
+                )
+            }
+        }
+    }
+
+    private func mapPrivacyRow(
+        icon: String,
+        title: String,
+        message: String
+    ) -> some View {
+        HStack(alignment: .top, spacing: 13) {
+            Image(systemName: icon)
+                .foregroundStyle(WarmapTheme.coralSoft)
+                .frame(width: 30)
+
+            VStack(alignment: .leading, spacing: 3) {
+                Text(title)
+                    .font(.subheadline.bold())
+                    .foregroundStyle(WarmapTheme.textPrimary)
+                Text(message)
+                    .font(.caption)
+                    .foregroundStyle(WarmapTheme.textSecondary)
+            }
+        }
+    }
+}
+
+private struct WarmapMapNode: View {
+    let rating: Int
+
+    var body: some View {
+        ZStack {
+            Circle()
+                .fill(WarmapTheme.coral.opacity(0.16))
+                .frame(width: 48, height: 48)
+
+            Circle()
+                .fill(WarmapTheme.accentGradient)
+                .frame(width: 25, height: 25)
+                .overlay {
+                    Circle().stroke(Color.white.opacity(0.68), lineWidth: 2)
+                }
+
+            Text("\(rating)")
+                .font(.system(size: 10, weight: .bold, design: .rounded))
+                .foregroundStyle(.white)
+        }
+        .shadow(color: WarmapTheme.coral.opacity(0.52), radius: 13)
+        .accessibilityLabel("评分 \(rating) 分的记录")
     }
 }

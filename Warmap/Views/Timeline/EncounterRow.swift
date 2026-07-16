@@ -4,34 +4,77 @@ struct EncounterRow: View {
     let encounter: Encounter
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack {
-                Text(encounter.person?.nickname ?? "未指定人物")
-                    .font(.headline)
-                Spacer()
-                Text(encounter.occurredAt, format: .dateTime.month().day())
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-            }
+        WarmapCard(padding: 16) {
+            HStack(alignment: .top, spacing: 15) {
+                dateTile
 
-            HStack {
-                RatingView(rating: .constant(encounter.rating), editable: false)
-                Spacer()
-                if !encounter.placeName.isEmpty {
-                    Label(encounter.placeName, systemImage: "mappin")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
+                VStack(alignment: .leading, spacing: 9) {
+                    HStack(alignment: .firstTextBaseline) {
+                        Text(encounter.person?.nickname ?? "未指定人物")
+                            .font(.system(size: 17, weight: .bold, design: .rounded))
+                            .foregroundStyle(WarmapTheme.textPrimary)
+                            .lineLimit(1)
+
+                        Spacer()
+
+                        HStack(spacing: 5) {
+                            Image(systemName: "star.fill")
+                            Text("\(encounter.rating).0")
+                        }
+                        .font(.caption.bold())
+                        .foregroundStyle(WarmapTheme.gold)
+                    }
+
+                    if !encounter.placeName.isEmpty {
+                        Label(encounter.placeName, systemImage: "location.fill")
+                            .font(.subheadline)
+                            .foregroundStyle(WarmapTheme.textSecondary)
+                            .lineLimit(1)
+                    }
+
+                    if !encounter.notes.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                        Text(encounter.notes)
+                            .font(.caption)
+                            .foregroundStyle(Color.white.opacity(0.44))
+                            .lineLimit(2)
+                    }
+
+                    if !encounter.tags.isEmpty {
+                        ScrollView(.horizontal) {
+                            HStack(spacing: 7) {
+                                ForEach(encounter.tags.prefix(3), id: \.self) { tag in
+                                    WarmapTag(text: "#\(tag)")
+                                }
+                            }
+                        }
+                        .scrollIndicators(.hidden)
+                    }
                 }
-            }
 
-            if !encounter.tags.isEmpty {
-                Text(encounter.tags.map { "#\($0)" }.joined(separator: "  "))
-                    .font(.caption)
-                    .foregroundStyle(.indigo)
-                    .lineLimit(1)
+                Image(systemName: "chevron.right")
+                    .font(.caption.bold())
+                    .foregroundStyle(Color.white.opacity(0.22))
+                    .padding(.top, 4)
             }
         }
-        .padding(.vertical, 4)
+    }
+
+    private var dateTile: some View {
+        VStack(spacing: 1) {
+            Text(encounter.occurredAt, format: .dateTime.month(.abbreviated))
+                .font(.system(size: 10, weight: .bold, design: .rounded))
+                .textCase(.uppercase)
+                .foregroundStyle(WarmapTheme.coralSoft)
+
+            Text(encounter.occurredAt, format: .dateTime.day())
+                .font(.system(size: 24, weight: .bold, design: .rounded))
+                .foregroundStyle(WarmapTheme.textPrimary)
+        }
+        .frame(width: 54, height: 62)
+        .background(WarmapTheme.coral.opacity(0.1), in: RoundedRectangle(cornerRadius: 17))
+        .overlay {
+            RoundedRectangle(cornerRadius: 17)
+                .stroke(WarmapTheme.coral.opacity(0.16), lineWidth: 1)
+        }
     }
 }

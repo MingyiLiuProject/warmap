@@ -5,38 +5,59 @@ struct LockView: View {
 
     var body: some View {
         ZStack {
-            Color(.systemBackground).ignoresSafeArea()
+            WarmapBackground()
 
-            VStack(spacing: 24) {
-                Image(systemName: "lock.fill")
-                    .font(.system(size: 44))
-                    .foregroundStyle(.indigo)
+            VStack(spacing: 0) {
+                Spacer()
 
-                VStack(spacing: 8) {
-                    Text("Warmap 已锁定")
-                        .font(.title2.bold())
-                    Text("验证后查看本机记录")
-                        .foregroundStyle(.secondary)
+                ZStack {
+                    Circle()
+                        .fill(WarmapTheme.coral.opacity(0.12))
+                        .frame(width: 150, height: 150)
+                        .blur(radius: 12)
+
+                    WarmapBrandMark(size: 82)
                 }
+
+                VStack(spacing: 10) {
+                    Text("WARMAP")
+                        .font(.system(size: 12, weight: .bold, design: .rounded))
+                        .tracking(4)
+                        .foregroundStyle(WarmapTheme.coralSoft)
+
+                    Text("只属于你的记录")
+                        .font(.system(size: 30, weight: .bold, design: .rounded))
+                        .foregroundStyle(WarmapTheme.textPrimary)
+
+                    Text("没有账号，没有云端，也不会留下预览。")
+                        .font(.subheadline)
+                        .foregroundStyle(WarmapTheme.textSecondary)
+                        .multilineTextAlignment(.center)
+                }
+                .padding(.top, 26)
+
+                Spacer()
 
                 Button {
                     Task { await lockManager.unlock() }
                 } label: {
-                    Label("解锁", systemImage: "faceid")
-                        .frame(maxWidth: .infinity)
+                    Label("验证并解锁", systemImage: "faceid")
                 }
-                .buttonStyle(.borderedProminent)
-                .controlSize(.large)
-                .padding(.horizontal, 44)
+                .buttonStyle(WarmapPrimaryButtonStyle())
 
                 if let message = lockManager.errorMessage {
                     Text(message)
                         .font(.footnote)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(WarmapTheme.textSecondary)
                         .multilineTextAlignment(.center)
-                        .padding(.horizontal, 32)
+                        .padding(.top, 14)
                 }
+
+                WarmapPrivacyPill(text: "端到端本机保护")
+                    .padding(.top, 22)
+                    .padding(.bottom, 28)
             }
+            .padding(.horizontal, 28)
         }
         .task { await lockManager.unlock() }
     }

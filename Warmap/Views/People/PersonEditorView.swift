@@ -16,33 +16,88 @@ struct PersonEditorView: View {
     }
 
     var body: some View {
-        Form {
-            Section("人物卡片") {
-                TextField("昵称或代号", text: $nickname)
-                TextField("标签，用逗号分隔", text: $tagsText)
-            }
+        ZStack {
+            WarmapBackground()
 
-            Section {
-                Text("建议只使用你能识别的代号，不填写真实姓名或联系方式。")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
+            ScrollView {
+                VStack(spacing: 22) {
+                    HStack {
+                        WarmapIconButton(
+                            systemName: "xmark",
+                            accessibilityLabel: "取消"
+                        ) {
+                            dismiss()
+                        }
+
+                        Spacer()
+
+                        Text(person == nil ? "新增人物" : "编辑人物")
+                            .font(.headline)
+                            .foregroundStyle(WarmapTheme.textPrimary)
+
+                        Spacer()
+
+                        WarmapIconButton(
+                            systemName: "checkmark",
+                            accessibilityLabel: "保存",
+                            prominent: true
+                        ) {
+                            save()
+                        }
+                    }
+
+                    WarmapAvatar(
+                        name: nickname.isEmpty ? "?" : nickname,
+                        seed: person?.id.uuidString ?? nickname,
+                        size: 92
+                    )
+                    .padding(.vertical, 8)
+
+                    WarmapFormSection("匿名身份", systemName: "person.fill") {
+                        VStack(spacing: 15) {
+                            TextField("昵称或代号", text: $nickname)
+                                .font(.title3.bold())
+                                .foregroundStyle(WarmapTheme.textPrimary)
+
+                            WarmapDivider()
+
+                            TextField("标签，用逗号分隔", text: $tagsText)
+                                .foregroundStyle(WarmapTheme.textPrimary)
+                        }
+                    }
+
+                    WarmapCard {
+                        Label(
+                            "建议使用你能识别的代号，不填写真实姓名、电话或社交账号。",
+                            systemImage: "shield.lefthalf.filled"
+                        )
+                        .font(.subheadline)
+                        .foregroundStyle(WarmapTheme.textSecondary)
+                    }
+
+                    Button("保存人物卡片", action: save)
+                        .buttonStyle(WarmapPrimaryButtonStyle())
+                        .disabled(
+                            nickname.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+                        )
+                        .opacity(
+                            nickname.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+                                ? 0.45
+                                : 1
+                        )
+                }
+                .padding(20)
+                .padding(.bottom, 30)
             }
+            .scrollIndicators(.hidden)
         }
-        .navigationTitle(person == nil ? "新增人物" : "编辑人物")
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .cancellationAction) {
-                Button("取消") { dismiss() }
-            }
-            ToolbarItem(placement: .confirmationAction) {
-                Button("保存", action: save)
-                    .disabled(nickname.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
-            }
-        }
+        .toolbar(.hidden, for: .navigationBar)
     }
 
     private func save() {
         let cleanName = nickname.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !cleanName.isEmpty else { return }
+
         if let person {
             person.nickname = cleanName
             person.tagsText = tagsText

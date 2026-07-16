@@ -3,16 +3,22 @@ import SwiftUI
 struct PrivacyCoverView: View {
     var body: some View {
         ZStack {
-            Color(.systemBackground).ignoresSafeArea()
-            VStack(spacing: 12) {
-                Image(systemName: "eye.slash.fill")
-                    .font(.system(size: 38))
-                    .foregroundStyle(.indigo)
+            WarmapBackground()
+            VStack(spacing: 18) {
+                ZStack {
+                    Circle()
+                        .fill(Color.white.opacity(0.06))
+                        .frame(width: 92, height: 92)
+                    Image(systemName: "eye.slash.fill")
+                        .font(.system(size: 34, weight: .medium))
+                        .foregroundStyle(WarmapTheme.coralSoft)
+                }
                 Text("内容已隐藏")
-                    .font(.headline)
+                    .font(.title2.bold())
+                    .foregroundStyle(WarmapTheme.textPrimary)
                 Text("停止屏幕录制或镜像后恢复显示")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
+                    .font(.subheadline)
+                    .foregroundStyle(WarmapTheme.textSecondary)
             }
         }
     }

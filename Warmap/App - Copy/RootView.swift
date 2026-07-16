@@ -19,8 +19,9 @@ struct RootView: View {
                     .transition(.opacity)
             }
         }
-        .animation(.easeInOut(duration: 0.18), value: lockManager.isLocked)
-        .animation(.easeInOut(duration: 0.18), value: privacyShield.shouldObscure)
+        .preferredColorScheme(.dark)
+        .animation(.spring(response: 0.36, dampingFraction: 0.88), value: lockManager.isLocked)
+        .animation(.easeInOut(duration: 0.2), value: privacyShield.shouldObscure)
         .onChange(of: scenePhase) { _, phase in
             if phase != .active {
                 lockManager.lock()

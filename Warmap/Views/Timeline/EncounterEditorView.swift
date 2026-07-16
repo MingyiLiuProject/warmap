@@ -15,6 +15,7 @@ struct EncounterEditorView: View {
     @State private var rating: Int
     @State private var tagsText: String
     @State private var notes: String
+    @State private var showingDeleteConfirmation = false
 
     init(encounter: Encounter? = nil) {
         self.encounter = encounter
@@ -29,52 +30,186 @@ struct EncounterEditorView: View {
     }
 
     var body: some View {
-        Form {
-            Section("基本信息") {
-                DatePicker("时间", selection: $occurredAt)
-                Picker("人物", selection: $selectedPersonID) {
-                    Text("未指定").tag(nil as UUID?)
-                    ForEach(people) { person in
-                        Text(person.nickname).tag(person.id as UUID?)
+        ZStack {
+            WarmapBackground()
+
+            ScrollView {
+                VStack(spacing: 22) {
+                    header
+
+                    WarmapFormSection("基本信息", systemName: "calendar") {
+                        VStack(spacing: 15) {
+                            DatePicker("时间", selection: $occurredAt)
+                                .tint(WarmapTheme.coralSoft)
+
+                            WarmapDivider()
+
+                            Picker("人物", selection: $selectedPersonID) {
+                                Text("未指定").tag(nil as UUID?)
+                                ForEach(people) { person in
+                                    Text(person.nickname).tag(person.id as UUID?)
+                                }
+                            }
+                            .tint(WarmapTheme.coralSoft)
+
+                            WarmapDivider()
+
+                            HStack {
+                                Text("地点")
+                                Spacer()
+                                TextField("输入地点名称", text: $placeName)
+                                    .multilineTextAlignment(.trailing)
+                            }
+                        }
+                        .foregroundStyle(WarmapTheme.textPrimary)
+                    }
+
+                    WarmapFormSection(
+                        "体验评分",
+                        systemName: "star.fill",
+                        detail: scoreDescription
+                    ) {
+                        VStack(spacing: 16) {
+                            RatingView(rating: $rating)
+                                .frame(maxWidth: .infinity)
+
+                            Text("评分只服务于你的回顾，不代表任何人的价值。")
+                                .font(.caption)
+                                .foregroundStyle(WarmapTheme.textSecondary)
+                                .multilineTextAlignment(.center)
+                        }
+                    }
+
+                    WarmapFormSection("标签", systemName: "number") {
+                        TextField("例如：长期, 周末, 特别", text: $tagsText)
+                            .foregroundStyle(WarmapTheme.textPrimary)
+                    }
+
+                    WarmapFormSection(
+                        "地图位置",
+                        systemName: "location.fill",
+                        detail: "可选 · 默认模糊"
+                    ) {
+                        VStack(spacing: 14) {
+                            HStack(spacing: 12) {
+                                coordinateField("纬度", text: $latitudeText)
+                                coordinateField("经度", text: $longitudeText)
+                            }
+
+                            Label(
+                                "地图仅展示约公里级的模糊位置",
+                                systemImage: "eye.slash.fill"
+                            )
+                            .font(.caption)
+                            .foregroundStyle(WarmapTheme.mint)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        }
+                    }
+
+                    WarmapFormSection("私人备注", systemName: "text.alignleft") {
+                        TextEditor(text: $notes)
+                            .frame(minHeight: 150)
+                            .scrollContentBackground(.hidden)
+                            .foregroundStyle(WarmapTheme.textPrimary)
+                            .overlay(alignment: .topLeading) {
+                                if notes.isEmpty {
+                                    Text("写下只对自己有意义的细节…")
+                                        .foregroundStyle(WarmapTheme.textSecondary)
+                                        .padding(.top, 8)
+                                        .allowsHitTesting(false)
+                                }
+                            }
+                    }
+
+                    Button {
+                        save()
+                    } label: {
+                        Label("保存到本机", systemImage: "lock.fill")
+                    }
+                    .buttonStyle(WarmapPrimaryButtonStyle())
+
+                    if encounter != nil {
+                        Button(role: .destructive) {
+                            showingDeleteConfirmation = true
+                        } label: {
+                            Label("删除这条记录", systemImage: "trash")
+                        }
+                        .buttonStyle(WarmapSecondaryButtonStyle())
+                        .foregroundStyle(WarmapTheme.coralSoft)
                     }
                 }
-                TextField("地点名称", text: $placeName)
+                .padding(.horizontal, 20)
+                .padding(.top, 18)
+                .padding(.bottom, 48)
+            }
+            .scrollIndicators(.hidden)
+        }
+        .toolbar(.hidden, for: .navigationBar)
+        .confirmationDialog(
+            "确定删除这条记录？",
+            isPresented: $showingDeleteConfirmation,
+            titleVisibility: .visible
+        ) {
+            Button("删除", role: .destructive, action: delete)
+            Button("取消", role: .cancel) {}
+        } message: {
+            Text("此操作无法撤销。")
+        }
+    }
+
+    private var header: some View {
+        HStack {
+            WarmapIconButton(
+                systemName: "xmark",
+                accessibilityLabel: "取消"
+            ) {
+                dismiss()
             }
 
-            Section("体验评分") {
-                RatingView(rating: $rating)
-                    .padding(.vertical, 4)
+            Spacer()
+
+            VStack(spacing: 3) {
+                Text(encounter == nil ? "新增时刻" : "编辑时刻")
+                    .font(.headline)
+                    .foregroundStyle(WarmapTheme.textPrimary)
+                Text("仅保存在此设备")
+                    .font(.caption)
+                    .foregroundStyle(WarmapTheme.textSecondary)
             }
 
-            Section("标签") {
-                TextField("用逗号分隔，例如：长期, 周末", text: $tagsText)
-            }
+            Spacer()
 
-            Section("地图坐标（可选）") {
-                TextField("纬度", text: $latitudeText)
-                    .keyboardType(.numbersAndPunctuation)
-                TextField("经度", text: $longitudeText)
-                    .keyboardType(.numbersAndPunctuation)
-                Text("地图默认只显示模糊坐标，降低精确位置暴露风险。")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-            }
-
-            Section("备注") {
-                TextEditor(text: $notes)
-                    .frame(minHeight: 120)
+            WarmapIconButton(
+                systemName: "checkmark",
+                accessibilityLabel: "保存",
+                prominent: true
+            ) {
+                save()
             }
         }
-        .navigationTitle(encounter == nil ? "新增记录" : "编辑记录")
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .cancellationAction) {
-                Button("取消") { dismiss() }
-            }
-            ToolbarItem(placement: .confirmationAction) {
-                Button("保存", action: save)
-            }
+    }
+
+    private var scoreDescription: String {
+        switch rating {
+        case 1: return "不太好"
+        case 2: return "一般"
+        case 3: return "不错"
+        case 4: return "很好"
+        default: return "难忘"
         }
+    }
+
+    private func coordinateField(_ title: String, text: Binding<String>) -> some View {
+        VStack(alignment: .leading, spacing: 7) {
+            Text(title)
+                .font(.caption)
+                .foregroundStyle(WarmapTheme.textSecondary)
+            TextField("—", text: text)
+                .keyboardType(.numbersAndPunctuation)
+                .foregroundStyle(WarmapTheme.textPrimary)
+        }
+        .padding(13)
+        .background(Color.white.opacity(0.05), in: RoundedRectangle(cornerRadius: 14))
     }
 
     private func save() {
@@ -106,6 +241,12 @@ struct EncounterEditorView: View {
                 )
             )
         }
+        dismiss()
+    }
+
+    private func delete() {
+        guard let encounter else { return }
+        modelContext.delete(encounter)
         dismiss()
     }
 }

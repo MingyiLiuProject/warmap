@@ -4,27 +4,51 @@ struct PersonRow: View {
     let person: Person
 
     var body: some View {
-        HStack(spacing: 14) {
-            Image(systemName: "person.crop.circle.fill")
-                .font(.system(size: 34))
-                .foregroundStyle(.indigo)
+        WarmapCard(padding: 16) {
+            VStack(alignment: .leading, spacing: 14) {
+                HStack(alignment: .top) {
+                    WarmapAvatar(
+                        name: person.nickname,
+                        seed: person.id.uuidString,
+                        size: 48
+                    )
 
-            VStack(alignment: .leading, spacing: 5) {
-                Text(person.nickname)
-                    .font(.headline)
-                Text("\(person.encounters.count) 条记录")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    Spacer()
+
+                    Image(systemName: "arrow.up.right")
+                        .font(.caption.bold())
+                        .foregroundStyle(Color.white.opacity(0.24))
+                }
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(person.nickname)
+                        .font(.system(size: 17, weight: .bold, design: .rounded))
+                        .foregroundStyle(WarmapTheme.textPrimary)
+                        .lineLimit(1)
+
+                    Text("\(person.encounters.count) 条记录")
+                        .font(.caption)
+                        .foregroundStyle(WarmapTheme.textSecondary)
+                }
+
+                HStack {
+                    if let average = person.averageRating {
+                        Label(
+                            average.formatted(.number.precision(.fractionLength(1))),
+                            systemImage: "star.fill"
+                        )
+                        .font(.caption.bold())
+                        .foregroundStyle(WarmapTheme.gold)
+                    } else {
+                        Text("暂无评分")
+                            .font(.caption)
+                            .foregroundStyle(WarmapTheme.textSecondary)
+                    }
+
+                    Spacer()
+                }
             }
-
-            Spacer()
-
-            if let average = person.averageRating {
-                Text(average, format: .number.precision(.fractionLength(1)))
-                    .font(.title3.bold())
-                    .foregroundStyle(.orange)
-            }
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .padding(.vertical, 4)
     }
 }

@@ -1,0 +1,102 @@
+name: Build Appetize iOS Package
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/appetize-build.yml"
+      - "Warmap/**"
+      - "project.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: appetize-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-appetize-package:
+    name: Build iOS Simulator app
+    runs-on: macos-14
+    timeout-minutes: 30
+
+    env:
+      DERIVED_DATA: ${{ github.workspace }}/build/DerivedData
+      OUTPUT_DIR: ${{ github.workspace }}/build/Appetize
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Show Xcode environment
+        run: |
+          xcodebuild -version
+          xcrun simctl list runtimes
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate Xcode project
+        run: xcodegen generate
+
+      - name: Build universal iOS Simulator app
+        run: |
+          set -o pipefail
+          mkdir -p build
+          xcodebuild \
+            -project Warmap.xcodeproj \
+            -scheme Warmap \
+            -configuration Release \
+            -sdk iphonesimulator \
+            -destination "generic/platform=iOS Simulator" \
+            -derivedDataPath "$DERIVED_DATA" \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            ONLY_ACTIVE_ARCH=NO \
+            ARCHS="arm64 x86_64" \
+            clean build | tee build/xcodebuild.log
+
+      - name: Package for Appetize
+        run: |
+          APP_PATH="$(find "$DERIVED_DATA/Build/Products/Release-iphonesimulator" \
+            -maxdepth 1 -type d -name "*.app" -print -quit)"
+
+          if [ -z "$APP_PATH" ]; then
+            echo "No iOS Simulator .app bundle was produced."
+            exit 1
+          fi
+
+          mkdir -p "$OUTPUT_DIR"
+          ditto -c -k --sequesterRsrc --keepParent \
+            "$APP_PATH" \
+            "$OUTPUT_DIR/Warmap-Appetize.zip"
+
+          EXECUTABLE_NAME="$(/usr/libexec/PlistBuddy \
+            -c "Print :CFBundleExecutable" \
+            "$APP_PATH/Info.plist")"
+
+          echo "Built app: $APP_PATH"
+          echo "Architectures:"
+          lipo -info "$APP_PATH/$EXECUTABLE_NAME"
+          echo "Package:"
+          ls -lh "$OUTPUT_DIR/Warmap-Appetize.zip"
+
+      - name: Upload Appetize package
+        uses: actions/upload-artifact@v4
+        with:
+          name: Warmap-Appetize-${{ github.sha }}
+          path: build/Appetize/Warmap-Appetize.zip
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Upload build log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Warmap-Xcode-Log-${{ github.sha }}
+          path: build/xcodebuild.log
+          if-no-files-found: ignore
+          retention-days: 14
