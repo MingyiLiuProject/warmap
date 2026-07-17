@@ -12,9 +12,8 @@ struct LockView: View {
 
                 ZStack {
                     Circle()
-                        .fill(WarmapTheme.coral.opacity(0.12))
+                        .fill(WarmapTheme.coralSurface)
                         .frame(width: 150, height: 150)
-                        .blur(radius: 12)
 
                     WarmapBrandMark(size: 82)
                 }

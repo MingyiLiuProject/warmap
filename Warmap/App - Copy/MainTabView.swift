@@ -16,7 +16,8 @@ struct MainTabView: View {
                 .tabItem { Label("安全", systemImage: "lock.shield.fill") }
         }
         .tint(WarmapTheme.coralSoft)
-        .toolbarBackground(.ultraThinMaterial, for: .tabBar)
+        .toolbarBackground(WarmapTheme.canvasRaised, for: .tabBar)
         .toolbarBackground(.visible, for: .tabBar)
+        .toolbarColorScheme(.dark, for: .tabBar)
     }
 }

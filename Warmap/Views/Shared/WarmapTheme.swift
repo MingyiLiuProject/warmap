@@ -1,57 +1,28 @@
 import SwiftUI
 
 enum WarmapTheme {
-    static let canvas = Color(red: 0.035, green: 0.032, blue: 0.055)
-    static let canvasRaised = Color(red: 0.065, green: 0.057, blue: 0.09)
-    static let coral = Color(red: 1.0, green: 0.39, blue: 0.42)
-    static let coralSoft = Color(red: 1.0, green: 0.62, blue: 0.58)
-    static let plum = Color(red: 0.48, green: 0.34, blue: 0.78)
-    static let violet = Color(red: 0.68, green: 0.48, blue: 0.94)
-    static let gold = Color(red: 0.96, green: 0.73, blue: 0.36)
-    static let mint = Color(red: 0.39, green: 0.84, blue: 0.72)
-    static let textPrimary = Color.white.opacity(0.96)
-    static let textSecondary = Color.white.opacity(0.58)
-    static let hairline = Color.white.opacity(0.09)
-
-    static let accentGradient = LinearGradient(
-        colors: [coralSoft, coral, plum],
-        startPoint: .topLeading,
-        endPoint: .bottomTrailing
-    )
-
-    static let quietGradient = LinearGradient(
-        colors: [Color.white.opacity(0.09), Color.white.opacity(0.035)],
-        startPoint: .topLeading,
-        endPoint: .bottomTrailing
-    )
+    static let canvas = Color(red: 0.055, green: 0.067, blue: 0.09)
+    static let canvasRaised = Color(red: 0.082, green: 0.098, blue: 0.13)
+    static let surface = Color(red: 0.094, green: 0.114, blue: 0.15)
+    static let surfaceRaised = Color(red: 0.12, green: 0.145, blue: 0.19)
+    static let coral = Color(red: 0.96, green: 0.34, blue: 0.36)
+    static let coralSoft = Color(red: 1.0, green: 0.46, blue: 0.46)
+    static let coralSurface = Color(red: 0.24, green: 0.10, blue: 0.12)
+    static let plum = Color(red: 0.37, green: 0.42, blue: 0.86)
+    static let violet = Color(red: 0.48, green: 0.54, blue: 0.96)
+    static let violetSurface = Color(red: 0.13, green: 0.15, blue: 0.29)
+    static let gold = Color(red: 0.91, green: 0.66, blue: 0.24)
+    static let mint = Color(red: 0.31, green: 0.76, blue: 0.62)
+    static let mintSurface = Color(red: 0.08, green: 0.22, blue: 0.18)
+    static let textPrimary = Color(red: 0.95, green: 0.96, blue: 0.98)
+    static let textSecondary = Color(red: 0.62, green: 0.66, blue: 0.73)
+    static let hairline = Color(red: 0.17, green: 0.20, blue: 0.26)
 }
 
 struct WarmapBackground: View {
     var body: some View {
-        GeometryReader { proxy in
-            ZStack {
-                WarmapTheme.canvas
-
-                Circle()
-                    .fill(WarmapTheme.plum.opacity(0.25))
-                    .frame(width: proxy.size.width * 0.9)
-                    .blur(radius: 90)
-                    .offset(
-                        x: proxy.size.width * 0.38,
-                        y: -proxy.size.height * 0.36
-                    )
-
-                Circle()
-                    .fill(WarmapTheme.coral.opacity(0.13))
-                    .frame(width: proxy.size.width * 0.75)
-                    .blur(radius: 100)
-                    .offset(
-                        x: -proxy.size.width * 0.42,
-                        y: proxy.size.height * 0.36
-                    )
-            }
+        WarmapTheme.canvas
             .ignoresSafeArea()
-        }
     }
 }
 
@@ -61,14 +32,13 @@ struct WarmapBrandMark: View {
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: size * 0.31, style: .continuous)
-                .fill(WarmapTheme.accentGradient)
+                .fill(WarmapTheme.coral)
 
             Image(systemName: "sparkles")
                 .font(.system(size: size * 0.42, weight: .semibold))
                 .foregroundStyle(.white)
         }
         .frame(width: size, height: size)
-        .shadow(color: WarmapTheme.coral.opacity(0.3), radius: 18, y: 8)
         .accessibilityHidden(true)
     }
 }
@@ -131,10 +101,10 @@ struct WarmapIconButton: View {
                 .background {
                     if prominent {
                         RoundedRectangle(cornerRadius: 15, style: .continuous)
-                            .fill(WarmapTheme.accentGradient)
+                            .fill(WarmapTheme.coral)
                     } else {
                         RoundedRectangle(cornerRadius: 15, style: .continuous)
-                            .fill(Color.white.opacity(0.07))
+                            .fill(WarmapTheme.surfaceRaised)
                             .overlay {
                                 RoundedRectangle(cornerRadius: 15, style: .continuous)
                                     .stroke(WarmapTheme.hairline, lineWidth: 1)
@@ -163,10 +133,10 @@ struct WarmapCard<Content: View>: View {
         content
             .padding(padding)
             .background {
-                RoundedRectangle(cornerRadius: 24, style: .continuous)
-                    .fill(WarmapTheme.quietGradient)
+                RoundedRectangle(cornerRadius: 18, style: .continuous)
+                    .fill(WarmapTheme.surface)
                     .overlay {
-                        RoundedRectangle(cornerRadius: 24, style: .continuous)
+                        RoundedRectangle(cornerRadius: 18, style: .continuous)
                             .stroke(WarmapTheme.hairline, lineWidth: 1)
                     }
             }
@@ -198,7 +168,7 @@ struct WarmapFormSection<Content: View>: View {
                     .font(.caption.bold())
                     .foregroundStyle(WarmapTheme.coralSoft)
                     .frame(width: 27, height: 27)
-                    .background(WarmapTheme.coral.opacity(0.1), in: Circle())
+                    .background(WarmapTheme.coralSurface, in: Circle())
 
                 Text(title)
                     .font(.subheadline.weight(.semibold))
@@ -256,10 +226,10 @@ struct WarmapPrivacyPill: View {
             .foregroundStyle(WarmapTheme.mint)
             .padding(.horizontal, 11)
             .padding(.vertical, 7)
-            .background(WarmapTheme.mint.opacity(0.1), in: Capsule())
+            .background(WarmapTheme.mintSurface, in: Capsule())
             .overlay {
                 Capsule()
-                    .stroke(WarmapTheme.mint.opacity(0.18), lineWidth: 1)
+                    .stroke(WarmapTheme.mint, lineWidth: 1)
             }
     }
 }
@@ -273,7 +243,7 @@ struct WarmapTag: View {
             .foregroundStyle(WarmapTheme.coralSoft)
             .padding(.horizontal, 10)
             .padding(.vertical, 6)
-            .background(WarmapTheme.coral.opacity(0.1), in: Capsule())
+            .background(WarmapTheme.coralSurface, in: Capsule())
     }
 }
 
@@ -302,9 +272,9 @@ struct WarmapSearchField: View {
         }
         .padding(.horizontal, 16)
         .frame(height: 50)
-        .background(Color.white.opacity(0.07), in: RoundedRectangle(cornerRadius: 17))
+        .background(WarmapTheme.surface, in: RoundedRectangle(cornerRadius: 14))
         .overlay {
-            RoundedRectangle(cornerRadius: 17)
+            RoundedRectangle(cornerRadius: 14)
                 .stroke(WarmapTheme.hairline, lineWidth: 1)
         }
     }
@@ -335,8 +305,7 @@ struct WarmapEmptyState: View {
         VStack(spacing: 18) {
             ZStack {
                 Circle()
-                    .fill(WarmapTheme.accentGradient)
-                    .opacity(0.18)
+                    .fill(WarmapTheme.coralSurface)
                     .frame(width: 82, height: 82)
 
                 Image(systemName: systemName)
@@ -371,27 +340,21 @@ struct WarmapAvatar: View {
     let seed: String
     var size: CGFloat = 54
 
-    private var colors: [Color] {
-        let palettes: [[Color]] = [
-            [WarmapTheme.coralSoft, WarmapTheme.plum],
-            [WarmapTheme.violet, Color(red: 0.27, green: 0.49, blue: 0.96)],
-            [WarmapTheme.gold, WarmapTheme.coral],
-            [WarmapTheme.mint, Color(red: 0.22, green: 0.55, blue: 0.62)]
+    private var color: Color {
+        let palette: [Color] = [
+            WarmapTheme.coral,
+            WarmapTheme.violet,
+            WarmapTheme.gold,
+            WarmapTheme.mint
         ]
         let value = seed.unicodeScalars.reduce(0) { $0 + Int($1.value) }
-        return palettes[value % palettes.count]
+        return palette[value % palette.count]
     }
 
     var body: some View {
         ZStack {
             Circle()
-                .fill(
-                    LinearGradient(
-                        colors: colors,
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
+                .fill(color)
 
             Circle()
                 .stroke(Color.white.opacity(0.24), lineWidth: 1)
@@ -402,7 +365,6 @@ struct WarmapAvatar: View {
                 .foregroundStyle(.white)
         }
         .frame(width: size, height: size)
-        .shadow(color: colors[0].opacity(0.24), radius: 14, y: 7)
         .accessibilityHidden(true)
     }
 }
@@ -431,13 +393,10 @@ struct WarmapPrimaryButtonStyle: ButtonStyle {
             .foregroundStyle(.white)
             .frame(maxWidth: .infinity)
             .frame(height: 52)
-            .background(WarmapTheme.accentGradient, in: RoundedRectangle(cornerRadius: 17))
-            .shadow(
-                color: WarmapTheme.coral.opacity(configuration.isPressed ? 0.12 : 0.28),
-                radius: configuration.isPressed ? 6 : 16,
-                y: configuration.isPressed ? 3 : 8
+            .background(
+                configuration.isPressed ? WarmapTheme.coralSoft : WarmapTheme.coral,
+                in: RoundedRectangle(cornerRadius: 14)
             )
-            .scaleEffect(configuration.isPressed ? 0.985 : 1)
     }
 }
 
@@ -448,10 +407,14 @@ struct WarmapSecondaryButtonStyle: ButtonStyle {
             .foregroundStyle(WarmapTheme.textPrimary)
             .frame(maxWidth: .infinity)
             .frame(height: 48)
-            .background(Color.white.opacity(configuration.isPressed ? 0.11 : 0.07))
-            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .background(
+                configuration.isPressed
+                    ? WarmapTheme.surfaceRaised
+                    : WarmapTheme.surface
+            )
+            .clipShape(RoundedRectangle(cornerRadius: 14))
             .overlay {
-                RoundedRectangle(cornerRadius: 16)
+                RoundedRectangle(cornerRadius: 14)
                     .stroke(WarmapTheme.hairline, lineWidth: 1)
             }
     }

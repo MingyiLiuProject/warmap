@@ -2,9 +2,10 @@
 
 ## Concept
 
-Warmap should feel like a private archive kept after midnight: discreet, warm,
-and intentional. It must not resemble a dating app, health dashboard, or
-explicit-content product.
+Warmap should feel like a modern private archive: discreet, direct, and
+intentional. It must not resemble a dating app, health dashboard, or
+explicit-content product. The interface is deliberately flat, with no glow,
+glass, gradients, or decorative depth effects.
 
 ## Brand principles
 
@@ -14,8 +15,8 @@ explicit-content product.
 
 2. **Warm, not sugary**
 
-   Coral and plum create emotional warmth without defaulting to stereotypical
-   pink romance styling.
+   Coral creates emotional warmth without defaulting to stereotypical pink
+   romance styling. Blue-violet is used only as a secondary category color.
 
 3. **Data with dignity**
 
@@ -29,18 +30,18 @@ explicit-content product.
 
 ## Palette
 
-- Canvas: near-black aubergine
+- Canvas: near-black blue
 - Primary accent: warm coral
-- Secondary accent: misted plum
+- Secondary accent: clear blue-violet
 - Trust state: muted mint
 - Score highlight: soft gold
 
 ## UI language
 
 - Rounded display typography for headlines and numbers
-- 24 pt continuous card corners
-- Hairline white borders over translucent surfaces
-- Sparse gradients reserved for primary actions and identity moments
+- 18 pt continuous card corners
+- Solid card surfaces with hairline borders
+- Flat color blocks for actions, status, and generated identities
 - Large breathing room, minimal chrome, no decorative photography
 
 ## Privacy expression

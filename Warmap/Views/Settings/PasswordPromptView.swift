@@ -51,7 +51,7 @@ struct PasswordPromptView: View {
 
                         ZStack {
                             Circle()
-                                .fill(WarmapTheme.coral.opacity(0.12))
+                                .fill(WarmapTheme.coralSurface)
                                 .frame(width: 92, height: 92)
                             Image(systemName: mode == .export ? "lock.doc.fill" : "key.fill")
                                 .font(.system(size: 32, weight: .semibold))

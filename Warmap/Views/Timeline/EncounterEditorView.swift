@@ -209,7 +209,7 @@ struct EncounterEditorView: View {
                 .foregroundStyle(WarmapTheme.textPrimary)
         }
         .padding(13)
-        .background(Color.white.opacity(0.05), in: RoundedRectangle(cornerRadius: 14))
+        .background(WarmapTheme.surfaceRaised, in: RoundedRectangle(cornerRadius: 14))
     }
 
     private func save() {

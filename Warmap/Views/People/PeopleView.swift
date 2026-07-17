@@ -94,7 +94,7 @@ private struct PeopleOverviewCard: View {
             HStack(spacing: 18) {
                 ZStack {
                     Circle()
-                        .fill(WarmapTheme.plum.opacity(0.22))
+                        .fill(WarmapTheme.violetSurface)
                         .frame(width: 66, height: 66)
                     Image(systemName: "person.2.fill")
                         .font(.system(size: 24, weight: .semibold))

@@ -12,7 +12,7 @@ struct RatingView: View {
                     .foregroundStyle(
                         value <= rating
                             ? WarmapTheme.gold
-                            : Color.white.opacity(0.18)
+                            : WarmapTheme.hairline
                     )
                     .contentShape(Rectangle())
                     .onTapGesture {

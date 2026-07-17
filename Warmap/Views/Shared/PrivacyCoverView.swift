@@ -7,7 +7,7 @@ struct PrivacyCoverView: View {
             VStack(spacing: 18) {
                 ZStack {
                     Circle()
-                        .fill(Color.white.opacity(0.06))
+                        .fill(WarmapTheme.surfaceRaised)
                         .frame(width: 92, height: 92)
                     Image(systemName: "eye.slash.fill")
                         .font(.system(size: 34, weight: .medium))

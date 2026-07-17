@@ -96,32 +96,22 @@ struct EncounterMapView: View {
             }
             .ignoresSafeArea(edges: .top)
 
-            LinearGradient(
-                colors: [
-                    WarmapTheme.canvas.opacity(0.92),
-                    Color.clear,
-                    WarmapTheme.canvas.opacity(0.34)
-                ],
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .ignoresSafeArea()
-            .allowsHitTesting(false)
-
             VStack(spacing: 0) {
-                HStack(alignment: .top) {
-                    VStack(alignment: .leading, spacing: 5) {
-                        Text("PRIVATE GEOGRAPHY")
-                            .font(.system(size: 10, weight: .bold, design: .rounded))
-                            .tracking(1.6)
-                            .foregroundStyle(WarmapTheme.coralSoft)
-                        Text("记忆地图")
-                            .font(.system(size: 29, weight: .bold, design: .rounded))
-                            .foregroundStyle(WarmapTheme.textPrimary)
-                    }
+                WarmapCard(padding: 14) {
+                    HStack(alignment: .center) {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("PRIVATE GEOGRAPHY")
+                                .font(.system(size: 10, weight: .bold, design: .rounded))
+                                .tracking(1.6)
+                                .foregroundStyle(WarmapTheme.coralSoft)
+                            Text("记忆地图")
+                                .font(.system(size: 24, weight: .bold, design: .rounded))
+                                .foregroundStyle(WarmapTheme.textPrimary)
+                        }
 
-                    Spacer()
-                    WarmapPrivacyPill(text: "约公里级")
+                        Spacer()
+                        WarmapPrivacyPill(text: "约公里级")
+                    }
                 }
                 .padding(.horizontal, 20)
                 .padding(.top, 16)
@@ -134,13 +124,13 @@ struct EncounterMapView: View {
                             .font(.system(size: 17, weight: .semibold))
                             .foregroundStyle(WarmapTheme.mint)
                             .frame(width: 40, height: 40)
-                            .background(WarmapTheme.mint.opacity(0.1), in: Circle())
+                            .background(WarmapTheme.mintSurface, in: Circle())
 
                         VStack(alignment: .leading, spacing: 3) {
                             Text("\(mapEncounters.count) 个模糊位置")
                                 .font(.subheadline.bold())
                                 .foregroundStyle(WarmapTheme.textPrimary)
-                            Text("点击发光节点查看记录，精确坐标不会显示在地图上。")
+                            Text("点击位置节点查看记录，精确坐标不会显示在地图上。")
                                 .font(.caption)
                                 .foregroundStyle(WarmapTheme.textSecondary)
                                 .lineLimit(2)
@@ -201,11 +191,11 @@ private struct WarmapMapNode: View {
     var body: some View {
         ZStack {
             Circle()
-                .fill(WarmapTheme.coral.opacity(0.16))
+                .fill(WarmapTheme.coralSurface)
                 .frame(width: 48, height: 48)
 
             Circle()
-                .fill(WarmapTheme.accentGradient)
+                .fill(WarmapTheme.coral)
                 .frame(width: 25, height: 25)
                 .overlay {
                     Circle().stroke(Color.white.opacity(0.68), lineWidth: 2)
@@ -215,7 +205,6 @@ private struct WarmapMapNode: View {
                 .font(.system(size: 10, weight: .bold, design: .rounded))
                 .foregroundStyle(.white)
         }
-        .shadow(color: WarmapTheme.coral.opacity(0.52), radius: 13)
         .accessibilityLabel("评分 \(rating) 分的记录")
     }
 }

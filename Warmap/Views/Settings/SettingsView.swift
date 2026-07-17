@@ -94,16 +94,7 @@ struct SettingsView: View {
     private var privacyScoreCard: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 28, style: .continuous)
-                .fill(
-                    LinearGradient(
-                        colors: [
-                            WarmapTheme.canvasRaised,
-                            WarmapTheme.plum.opacity(0.44)
-                        ],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
+                .fill(WarmapTheme.surfaceRaised)
 
             HStack(spacing: 22) {
                 ZStack {
@@ -112,7 +103,7 @@ struct SettingsView: View {
                     Circle()
                         .trim(from: 0, to: 1)
                         .stroke(
-                            WarmapTheme.accentGradient,
+                            WarmapTheme.coral,
                             style: StrokeStyle(lineWidth: 8, lineCap: .round)
                         )
                         .rotationEffect(.degrees(-90))
@@ -191,7 +182,8 @@ struct SettingsView: View {
                     title: "导出",
                     subtitle: "创建密码备份",
                     systemName: "arrow.up.doc.fill",
-                    tint: WarmapTheme.coralSoft
+                    tint: WarmapTheme.coralSoft,
+                    iconBackground: WarmapTheme.coralSurface
                 ) {
                     passwordMode = .export
                 }
@@ -200,7 +192,8 @@ struct SettingsView: View {
                     title: "导入",
                     subtitle: "恢复本机数据",
                     systemName: "arrow.down.doc.fill",
-                    tint: WarmapTheme.violet
+                    tint: WarmapTheme.violet,
+                    iconBackground: WarmapTheme.violetSurface
                 ) {
                     showingImporter = true
                 }
@@ -260,7 +253,7 @@ struct SettingsView: View {
                 .font(.system(size: 15, weight: .semibold))
                 .foregroundStyle(WarmapTheme.mint)
                 .frame(width: 36, height: 36)
-                .background(WarmapTheme.mint.opacity(0.1), in: Circle())
+                .background(WarmapTheme.mintSurface, in: Circle())
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
@@ -311,6 +304,7 @@ private struct BackupActionCard: View {
     let subtitle: String
     let systemName: String
     let tint: Color
+    let iconBackground: Color
     let action: () -> Void
 
     var body: some View {
@@ -321,7 +315,7 @@ private struct BackupActionCard: View {
                         .font(.system(size: 19, weight: .semibold))
                         .foregroundStyle(tint)
                         .frame(width: 42, height: 42)
-                        .background(tint.opacity(0.11), in: RoundedRectangle(cornerRadius: 14))
+                        .background(iconBackground, in: RoundedRectangle(cornerRadius: 12))
 
                     VStack(alignment: .leading, spacing: 3) {
                         Text(title)

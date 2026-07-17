@@ -93,7 +93,7 @@ struct TimelineView: View {
                                     .foregroundStyle(WarmapTheme.textPrimary)
                                     .padding(.horizontal, 14)
                                     .frame(height: 42)
-                                    .background(Color.white.opacity(0.07), in: Capsule())
+                                    .background(WarmapTheme.surface, in: Capsule())
                                     .overlay {
                                         Capsule().stroke(WarmapTheme.hairline, lineWidth: 1)
                                     }
@@ -174,24 +174,14 @@ private struct TimelineHeroCard: View {
     let averageRating: Double
 
     var body: some View {
-        ZStack(alignment: .topTrailing) {
-            RoundedRectangle(cornerRadius: 28, style: .continuous)
-                .fill(
-                    LinearGradient(
-                        colors: [
-                            WarmapTheme.plum.opacity(0.72),
-                            WarmapTheme.coral.opacity(0.48),
-                            WarmapTheme.canvasRaised
-                        ],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
+        ZStack(alignment: .leading) {
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .fill(WarmapTheme.surfaceRaised)
 
-            Circle()
-                .fill(Color.white.opacity(0.08))
-                .frame(width: 170, height: 170)
-                .offset(x: 48, y: -74)
+            RoundedRectangle(cornerRadius: 3, style: .continuous)
+                .fill(WarmapTheme.coral)
+                .frame(width: 5)
+                .padding(.vertical, 18)
 
             VStack(alignment: .leading, spacing: 24) {
                 HStack {
@@ -200,7 +190,7 @@ private struct TimelineHeroCard: View {
                             .font(.system(size: 21, weight: .bold, design: .rounded))
                         Text("没有云端副本，也没有公开身份。")
                             .font(.caption)
-                            .foregroundStyle(Color.white.opacity(0.68))
+                            .foregroundStyle(WarmapTheme.textSecondary)
                     }
                     Spacer()
                     Image(systemName: "lock.shield.fill")
@@ -224,13 +214,13 @@ private struct TimelineHeroCard: View {
             }
             .foregroundStyle(.white)
             .padding(22)
+            .padding(.leading, 5)
         }
         .frame(minHeight: 180)
-        .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
         .overlay {
-            RoundedRectangle(cornerRadius: 28, style: .continuous)
-                .stroke(Color.white.opacity(0.12), lineWidth: 1)
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .stroke(WarmapTheme.hairline, lineWidth: 1)
         }
-        .shadow(color: WarmapTheme.plum.opacity(0.2), radius: 28, y: 16)
     }
 }

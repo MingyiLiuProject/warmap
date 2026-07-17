@@ -35,7 +35,7 @@ struct EncounterRow: View {
                     if !encounter.notes.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                         Text(encounter.notes)
                             .font(.caption)
-                            .foregroundStyle(Color.white.opacity(0.44))
+                            .foregroundStyle(WarmapTheme.textSecondary)
                             .lineLimit(2)
                     }
 
@@ -53,7 +53,7 @@ struct EncounterRow: View {
 
                 Image(systemName: "chevron.right")
                     .font(.caption.bold())
-                    .foregroundStyle(Color.white.opacity(0.22))
+                    .foregroundStyle(WarmapTheme.textSecondary)
                     .padding(.top, 4)
             }
         }
@@ -71,10 +71,10 @@ struct EncounterRow: View {
                 .foregroundStyle(WarmapTheme.textPrimary)
         }
         .frame(width: 54, height: 62)
-        .background(WarmapTheme.coral.opacity(0.1), in: RoundedRectangle(cornerRadius: 17))
+        .background(WarmapTheme.coralSurface, in: RoundedRectangle(cornerRadius: 14))
         .overlay {
-            RoundedRectangle(cornerRadius: 17)
-                .stroke(WarmapTheme.coral.opacity(0.16), lineWidth: 1)
+            RoundedRectangle(cornerRadius: 14)
+                .stroke(WarmapTheme.coral, lineWidth: 1)
         }
     }
 }
