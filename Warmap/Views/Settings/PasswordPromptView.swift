@@ -111,6 +111,7 @@ struct PasswordPromptView: View {
                     .padding(.bottom, 24)
                 }
                 .scrollIndicators(.hidden)
+                .scrollDismissesKeyboard(.interactively)
             }
             .toolbar(.hidden, for: .navigationBar)
         }

@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 enum WarmapTheme {
     static let canvas = Color(red: 0.055, green: 0.067, blue: 0.09)
@@ -17,6 +18,41 @@ enum WarmapTheme {
     static let textPrimary = Color(red: 0.95, green: 0.96, blue: 0.98)
     static let textSecondary = Color(red: 0.62, green: 0.66, blue: 0.73)
     static let hairline = Color(red: 0.17, green: 0.20, blue: 0.26)
+}
+
+enum WarmapMotion {
+    static let press = Animation.spring(response: 0.24, dampingFraction: 1)
+    static let stateChange = Animation.spring(response: 0.36, dampingFraction: 1)
+    static let reveal = Animation.spring(response: 0.42, dampingFraction: 1)
+    static let reduced = Animation.easeOut(duration: 0.16)
+
+    static func animation(reduceMotion: Bool) -> Animation {
+        reduceMotion ? reduced : stateChange
+    }
+
+    static func transition(
+        reduceMotion: Bool,
+        edge: Edge = .bottom
+    ) -> AnyTransition {
+        if reduceMotion {
+            return .opacity
+        }
+        return .move(edge: edge).combined(with: .opacity)
+    }
+}
+
+enum WarmapHaptics {
+    static func success() {
+        UINotificationFeedbackGenerator().notificationOccurred(.success)
+    }
+
+    static func warning() {
+        UINotificationFeedbackGenerator().notificationOccurred(.warning)
+    }
+
+    static func error() {
+        UINotificationFeedbackGenerator().notificationOccurred(.error)
+    }
 }
 
 struct WarmapBackground: View {
@@ -70,7 +106,7 @@ struct WarmapPageHeader<Trailing: View>: View {
                     .foregroundStyle(WarmapTheme.coralSoft)
 
                 Text(title)
-                    .font(.system(size: 32, weight: .bold, design: .rounded))
+                    .font(.system(.largeTitle, design: .rounded, weight: .bold))
                     .foregroundStyle(WarmapTheme.textPrimary)
 
                 if let subtitle {
@@ -112,7 +148,7 @@ struct WarmapIconButton: View {
                     }
                 }
         }
-        .buttonStyle(.plain)
+        .buttonStyle(WarmapPressButtonStyle(pressedScale: 0.94))
         .accessibilityLabel(accessibilityLabel)
     }
 }
@@ -144,6 +180,8 @@ struct WarmapCard<Content: View>: View {
 }
 
 struct WarmapFormSection<Content: View>: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
     let title: String
     let systemName: String
     let detail: String?
@@ -180,6 +218,13 @@ struct WarmapFormSection<Content: View>: View {
                     Text(detail)
                         .font(.caption)
                         .foregroundStyle(WarmapTheme.textSecondary)
+                        .contentTransition(
+                            reduceMotion ? .opacity : .interpolate
+                        )
+                        .animation(
+                            WarmapMotion.animation(reduceMotion: reduceMotion),
+                            value: detail
+                        )
                 }
             }
 
@@ -199,6 +244,8 @@ struct WarmapDivider: View {
 }
 
 struct WarmapSectionTitle: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
     let title: String
     var detail: String?
 
@@ -212,6 +259,13 @@ struct WarmapSectionTitle: View {
                 Text(detail)
                     .font(.caption)
                     .foregroundStyle(WarmapTheme.textSecondary)
+                    .contentTransition(
+                        reduceMotion ? .opacity : .numericText()
+                    )
+                    .animation(
+                        WarmapMotion.animation(reduceMotion: reduceMotion),
+                        value: detail
+                    )
             }
         }
     }
@@ -266,8 +320,10 @@ struct WarmapSearchField: View {
                 } label: {
                     Image(systemName: "xmark.circle.fill")
                         .foregroundStyle(WarmapTheme.textSecondary)
+                        .frame(width: 32, height: 32)
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(WarmapPressButtonStyle(pressedScale: 0.9))
+                .accessibilityLabel("清除搜索")
             }
         }
         .padding(.horizontal, 16)
@@ -370,6 +426,8 @@ struct WarmapAvatar: View {
 }
 
 struct WarmapMetric: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
     let value: String
     let label: String
     var tint = WarmapTheme.textPrimary
@@ -377,8 +435,10 @@ struct WarmapMetric: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 3) {
             Text(value)
-                .font(.system(size: 23, weight: .bold, design: .rounded))
+                .font(.system(.title2, design: .rounded, weight: .bold))
                 .foregroundStyle(tint)
+                .contentTransition(reduceMotion ? .opacity : .numericText())
+                .animation(WarmapMotion.animation(reduceMotion: reduceMotion), value: value)
             Text(label)
                 .font(.caption)
                 .foregroundStyle(WarmapTheme.textSecondary)
@@ -387,6 +447,8 @@ struct WarmapMetric: View {
 }
 
 struct WarmapPrimaryButtonStyle: ButtonStyle {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(.headline)
@@ -397,10 +459,19 @@ struct WarmapPrimaryButtonStyle: ButtonStyle {
                 configuration.isPressed ? WarmapTheme.coralSoft : WarmapTheme.coral,
                 in: RoundedRectangle(cornerRadius: 14)
             )
+            .scaleEffect(
+                reduceMotion || !configuration.isPressed ? 1 : 0.98
+            )
+            .animation(
+                reduceMotion ? WarmapMotion.reduced : WarmapMotion.press,
+                value: configuration.isPressed
+            )
     }
 }
 
 struct WarmapSecondaryButtonStyle: ButtonStyle {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(.subheadline.weight(.semibold))
@@ -417,5 +488,30 @@ struct WarmapSecondaryButtonStyle: ButtonStyle {
                 RoundedRectangle(cornerRadius: 14)
                     .stroke(WarmapTheme.hairline, lineWidth: 1)
             }
+            .scaleEffect(
+                reduceMotion || !configuration.isPressed ? 1 : 0.98
+            )
+            .animation(
+                reduceMotion ? WarmapMotion.reduced : WarmapMotion.press,
+                value: configuration.isPressed
+            )
+    }
+}
+
+struct WarmapPressButtonStyle: ButtonStyle {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    var pressedScale: CGFloat = 0.985
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .opacity(configuration.isPressed ? 0.82 : 1)
+            .scaleEffect(
+                reduceMotion || !configuration.isPressed ? 1 : pressedScale
+            )
+            .animation(
+                reduceMotion ? WarmapMotion.reduced : WarmapMotion.press,
+                value: configuration.isPressed
+            )
     }
 }

@@ -9,6 +9,7 @@ private struct MapEncounter: Identifiable {
 }
 
 struct EncounterMapView: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Query(sort: \Encounter.occurredAt, order: .reverse) private var encounters: [Encounter]
     @State private var selectedEncounter: Encounter?
     @State private var position: MapCameraPosition = .automatic
@@ -85,7 +86,10 @@ struct EncounterMapView: View {
                         } label: {
                             WarmapMapNode(rating: item.encounter.rating)
                         }
-                        .buttonStyle(.plain)
+                        .buttonStyle(WarmapPressButtonStyle(pressedScale: 0.88))
+                        .accessibilityLabel(
+                            "\(item.encounter.person?.nickname ?? "记录")，评分 \(item.encounter.rating) 分"
+                        )
                     }
                 }
             }
@@ -130,6 +134,9 @@ struct EncounterMapView: View {
                             Text("\(mapEncounters.count) 个模糊位置")
                                 .font(.subheadline.bold())
                                 .foregroundStyle(WarmapTheme.textPrimary)
+                                .contentTransition(
+                                    reduceMotion ? .opacity : .numericText()
+                                )
                             Text("点击位置节点查看记录，精确坐标不会显示在地图上。")
                                 .font(.caption)
                                 .foregroundStyle(WarmapTheme.textSecondary)
@@ -141,6 +148,7 @@ struct EncounterMapView: View {
                 .padding(.bottom, 16)
             }
         }
+        .sensoryFeedback(.selection, trigger: selectedEncounter?.id)
     }
 
     private var privacyExplanation: some View {
@@ -205,6 +213,6 @@ private struct WarmapMapNode: View {
                 .font(.system(size: 10, weight: .bold, design: .rounded))
                 .foregroundStyle(.white)
         }
-        .accessibilityLabel("评分 \(rating) 分的记录")
+        .accessibilityHidden(true)
     }
 }

@@ -3,6 +3,7 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 struct SettingsView: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.modelContext) private var modelContext
     @Query private var people: [Person]
     @Query private var encounters: [Encounter]
@@ -13,6 +14,7 @@ struct SettingsView: View {
     @State private var showingExporter = false
     @State private var showingImporter = false
     @State private var alertMessage: String?
+    @State private var privacyProgress: CGFloat = 0
 
     var body: some View {
         NavigationStack {
@@ -88,6 +90,15 @@ struct SettingsView: View {
             } message: {
                 Text(alertMessage ?? "")
             }
+            .onAppear {
+                if reduceMotion {
+                    privacyProgress = 1
+                } else {
+                    withAnimation(WarmapMotion.reveal) {
+                        privacyProgress = 1
+                    }
+                }
+            }
         }
     }
 
@@ -101,7 +112,7 @@ struct SettingsView: View {
                     Circle()
                         .stroke(Color.white.opacity(0.08), lineWidth: 8)
                     Circle()
-                        .trim(from: 0, to: 1)
+                        .trim(from: 0, to: privacyProgress)
                         .stroke(
                             WarmapTheme.coral,
                             style: StrokeStyle(lineWidth: 8, lineCap: .round)
@@ -280,8 +291,10 @@ struct SettingsView: View {
             exportDocument = WarmapBackupDocument(
                 data: try ArchiveCryptoService.encrypt(archive, password: password)
             )
+            WarmapHaptics.success()
             showingExporter = true
         } catch {
+            WarmapHaptics.error()
             alertMessage = error.localizedDescription
         }
     }
@@ -292,8 +305,10 @@ struct SettingsView: View {
             let archive = try ArchiveCryptoService.decrypt(pendingImportData, password: password)
             try ArchiveStoreService.importArchive(archive, into: modelContext)
             self.pendingImportData = nil
+            WarmapHaptics.success()
             alertMessage = "导入完成，共恢复 \(archive.encounters.count) 条记录。"
         } catch {
+            WarmapHaptics.error()
             alertMessage = error.localizedDescription
         }
     }
@@ -329,7 +344,7 @@ private struct BackupActionCard: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
-        .buttonStyle(.plain)
+        .buttonStyle(WarmapPressButtonStyle())
     }
 }
 

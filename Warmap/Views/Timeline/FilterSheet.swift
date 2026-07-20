@@ -2,6 +2,7 @@ import SwiftData
 import SwiftUI
 
 struct FilterSheet: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.dismiss) private var dismiss
     @Query(sort: \Person.nickname) private var people: [Person]
 
@@ -63,22 +64,35 @@ struct FilterSheet: View {
                                     .tint(WarmapTheme.coral)
 
                                 if useDateRange {
-                                    WarmapDivider()
-                                    DatePicker(
-                                        "开始",
-                                        selection: $startDate,
-                                        displayedComponents: .date
-                                    )
-                                    DatePicker(
-                                        "结束",
-                                        selection: $endDate,
-                                        in: startDate...,
-                                        displayedComponents: .date
+                                    VStack(spacing: 14) {
+                                        WarmapDivider()
+                                        DatePicker(
+                                            "开始",
+                                            selection: $startDate,
+                                            displayedComponents: .date
+                                        )
+                                        DatePicker(
+                                            "结束",
+                                            selection: $endDate,
+                                            in: startDate...,
+                                            displayedComponents: .date
+                                        )
+                                    }
+                                    .transition(
+                                        WarmapMotion.transition(
+                                            reduceMotion: reduceMotion,
+                                            edge: .top
+                                        )
                                     )
                                 }
                             }
+                            .animation(
+                                WarmapMotion.animation(reduceMotion: reduceMotion),
+                                value: useDateRange
+                            )
                             .tint(WarmapTheme.coralSoft)
                             .foregroundStyle(WarmapTheme.textPrimary)
+                            .sensoryFeedback(.selection, trigger: useDateRange)
                         }
 
                         Button("应用筛选") {
@@ -87,9 +101,7 @@ struct FilterSheet: View {
                         .buttonStyle(WarmapPrimaryButtonStyle())
 
                         Button("重置全部") {
-                            selectedPersonID = nil
-                            minimumRating = 1
-                            useDateRange = false
+                            resetFilters()
                         }
                         .buttonStyle(WarmapSecondaryButtonStyle())
                     }
@@ -100,5 +112,19 @@ struct FilterSheet: View {
             .toolbar(.hidden, for: .navigationBar)
         }
         .presentationDetents([.large])
+    }
+
+    private func resetFilters() {
+        let changes = {
+            selectedPersonID = nil
+            minimumRating = 1
+            useDateRange = false
+        }
+
+        if reduceMotion {
+            changes()
+        } else {
+            withAnimation(WarmapMotion.stateChange, changes)
+        }
     }
 }

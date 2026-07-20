@@ -143,6 +143,7 @@ struct EncounterEditorView: View {
                 .padding(.bottom, 48)
             }
             .scrollIndicators(.hidden)
+            .scrollDismissesKeyboard(.interactively)
         }
         .toolbar(.hidden, for: .navigationBar)
         .confirmationDialog(
@@ -241,12 +242,14 @@ struct EncounterEditorView: View {
                 )
             )
         }
+        WarmapHaptics.success()
         dismiss()
     }
 
     private func delete() {
         guard let encounter else { return }
         modelContext.delete(encounter)
+        WarmapHaptics.warning()
         dismiss()
     }
 }

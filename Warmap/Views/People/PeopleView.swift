@@ -2,6 +2,7 @@ import SwiftData
 import SwiftUI
 
 struct PeopleView: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Query(sort: \Person.nickname) private var people: [Person]
     @State private var showingNewPerson = false
 
@@ -65,15 +66,22 @@ struct PeopleView: View {
                                         } label: {
                                             PersonRow(person: person)
                                         }
-                                        .buttonStyle(.plain)
+                                        .buttonStyle(WarmapPressButtonStyle())
                                     }
                                 }
+                                .transition(
+                                    WarmapMotion.transition(reduceMotion: reduceMotion)
+                                )
                             }
                         }
                     }
                     .padding(.horizontal, 20)
                     .padding(.top, 18)
                     .padding(.bottom, 120)
+                    .animation(
+                        WarmapMotion.animation(reduceMotion: reduceMotion),
+                        value: people.map(\.id)
+                    )
                 }
                 .scrollIndicators(.hidden)
             }
@@ -86,6 +94,8 @@ struct PeopleView: View {
 }
 
 private struct PeopleOverviewCard: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
     let peopleCount: Int
     let encounterCount: Int
 
@@ -116,9 +126,23 @@ private struct PeopleOverviewCard: View {
                     Text("\(peopleCount)")
                         .font(.system(size: 27, weight: .bold, design: .rounded))
                         .foregroundStyle(WarmapTheme.coralSoft)
+                        .contentTransition(
+                            reduceMotion ? .opacity : .numericText()
+                        )
+                        .animation(
+                            WarmapMotion.animation(reduceMotion: reduceMotion),
+                            value: peopleCount
+                        )
                     Text("\(encounterCount) 条记录")
                         .font(.caption)
                         .foregroundStyle(WarmapTheme.textSecondary)
+                        .contentTransition(
+                            reduceMotion ? .opacity : .numericText()
+                        )
+                        .animation(
+                            WarmapMotion.animation(reduceMotion: reduceMotion),
+                            value: encounterCount
+                        )
                 }
             }
         }

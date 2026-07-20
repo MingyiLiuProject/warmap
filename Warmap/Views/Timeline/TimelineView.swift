@@ -2,6 +2,7 @@ import SwiftData
 import SwiftUI
 
 struct TimelineView: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Query(sort: \Encounter.occurredAt, order: .reverse) private var encounters: [Encounter]
 
     @State private var searchText = ""
@@ -87,6 +88,9 @@ struct TimelineView: View {
                                                 .foregroundStyle(WarmapTheme.canvas)
                                                 .frame(width: 20, height: 20)
                                                 .background(WarmapTheme.coralSoft, in: Circle())
+                                                .contentTransition(
+                                                    reduceMotion ? .opacity : .numericText()
+                                                )
                                         }
                                     }
                                     .font(.subheadline.weight(.semibold))
@@ -98,7 +102,7 @@ struct TimelineView: View {
                                         Capsule().stroke(WarmapTheme.hairline, lineWidth: 1)
                                     }
                                 }
-                                .buttonStyle(.plain)
+                                .buttonStyle(WarmapPressButtonStyle(pressedScale: 0.96))
 
                                 Spacer()
 
@@ -117,6 +121,9 @@ struct TimelineView: View {
                                     showingNewEntry = true
                                 }
                             }
+                            .transition(
+                                WarmapMotion.transition(reduceMotion: reduceMotion)
+                            )
                         } else if filteredEncounters.isEmpty {
                             WarmapCard {
                                 WarmapEmptyState(
@@ -125,6 +132,9 @@ struct TimelineView: View {
                                     message: "换个关键词，或者放宽筛选条件。"
                                 )
                             }
+                            .transition(
+                                WarmapMotion.transition(reduceMotion: reduceMotion)
+                            )
                         } else {
                             VStack(spacing: 14) {
                                 WarmapSectionTitle(
@@ -139,17 +149,25 @@ struct TimelineView: View {
                                         } label: {
                                             EncounterRow(encounter: encounter)
                                         }
-                                        .buttonStyle(.plain)
+                                        .buttonStyle(WarmapPressButtonStyle())
                                     }
                                 }
                             }
+                            .transition(
+                                WarmapMotion.transition(reduceMotion: reduceMotion)
+                            )
                         }
                     }
                     .padding(.horizontal, 20)
                     .padding(.top, 18)
                     .padding(.bottom, 120)
+                    .animation(
+                        WarmapMotion.animation(reduceMotion: reduceMotion),
+                        value: filteredEncounters.map(\.id)
+                    )
                 }
                 .scrollIndicators(.hidden)
+                .scrollDismissesKeyboard(.interactively)
             }
             .toolbar(.hidden, for: .navigationBar)
             .sheet(isPresented: $showingNewEntry) {

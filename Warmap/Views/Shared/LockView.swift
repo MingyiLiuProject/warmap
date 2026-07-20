@@ -1,7 +1,9 @@
 import SwiftUI
 
 struct LockView: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @EnvironmentObject private var lockManager: AppLockManager
+    @State private var isPresented = false
 
     var body: some View {
         ZStack {
@@ -57,7 +59,18 @@ struct LockView: View {
                     .padding(.bottom, 28)
             }
             .padding(.horizontal, 28)
+            .opacity(isPresented ? 1 : 0)
+            .scaleEffect(reduceMotion || isPresented ? 1 : 0.97)
         }
-        .task { await lockManager.unlock() }
+        .task {
+            if reduceMotion {
+                isPresented = true
+            } else {
+                withAnimation(WarmapMotion.reveal) {
+                    isPresented = true
+                }
+            }
+            await lockManager.unlock()
+        }
     }
 }

@@ -90,6 +90,7 @@ struct PersonEditorView: View {
                 .padding(.bottom, 30)
             }
             .scrollIndicators(.hidden)
+            .scrollDismissesKeyboard(.interactively)
         }
         .toolbar(.hidden, for: .navigationBar)
     }
@@ -104,6 +105,7 @@ struct PersonEditorView: View {
         } else {
             modelContext.insert(Person(nickname: cleanName, tagsText: tagsText))
         }
+        WarmapHaptics.success()
         dismiss()
     }
 }

@@ -2,6 +2,7 @@ import SwiftData
 import SwiftUI
 
 struct PersonDetailView: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
 
@@ -58,9 +59,12 @@ struct PersonDetailView: View {
                                     } label: {
                                         EncounterRow(encounter: encounter)
                                     }
-                                    .buttonStyle(.plain)
+                                    .buttonStyle(WarmapPressButtonStyle())
                                 }
                             }
+                            .transition(
+                                WarmapMotion.transition(reduceMotion: reduceMotion)
+                            )
                         }
                     }
 
@@ -152,6 +156,7 @@ struct PersonDetailView: View {
 
     private func delete() {
         modelContext.delete(person)
+        WarmapHaptics.warning()
         dismiss()
     }
 }
